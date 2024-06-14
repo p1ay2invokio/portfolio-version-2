@@ -1,113 +1,849 @@
-import Image from "next/image";
+'use client'
+
+import NextImage from "next/image";
+import { useAppContext } from "./index";
+import { FaBookBookmark, FaFacebook, FaFolderOpen, FaInstagram, FaNodeJs } from "react-icons/fa6";
+import { AiFillMessage, AiTwotoneCode } from "react-icons/ai";
+import { Legend, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area } from "recharts";
+import { frame, motion, useMotionValueEvent } from 'framer-motion'
+import { FaArrowUp } from "react-icons/fa6";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { data, dataChart } from "./data";
+import { banners } from "./banners";
+import { useScroll } from "framer-motion"
+import TimeLine from "./components/timeline";
+import CustomAlert from "./components/customAlert";
+import { LikeMessage, getAllComments } from "../../methods/comments/comments";
+import { CommentsInterface } from "../../interfaces/commentsInterface";
+import { BiLogoTypescript, BiSolidMessageSquareDetail } from "react-icons/bi";
+import { IoIosHeartEmpty } from "react-icons/io";
+import Footer from "./components/footer";
+import { SiGmail } from "react-icons/si";
+import { MdGTranslate } from "react-icons/md";
+import { JsonRpcProvider, formatEther } from "ethers";
+import { transactionSend } from "../../methods/blockchain/transaction";
+import axios from 'axios'
+import { URI } from "../../config";
+
+declare global {
+  interface Window {
+    ethereum: any
+  }
+}
+
+// host ETH Hardhat
+const provider = new JsonRpcProvider('https://eth.llamarpc.com')
 
 export default function Home() {
+
+  const { theme, setTheme, twoAlert, two } = useAppContext()
+
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const projectRef = useRef<any>(null)
+
+  const [radarHover, setRadarHover] = useState<boolean>(false)
+  const [fireball, setFireball] = useState<boolean>(false)
+  const [magic, setMagic] = useState<boolean>(false)
+  const [nav, setNav] = useState<boolean>(false)
+
+  const [translate, setTranslate] = useState<boolean>(false)
+
+  const imgRef = useRef<any>(null)
+  const scrollRef = useRef<any>(null)
+
+  const [frame, setFrame] = useState(0)
+  const [refresh, setRefresh] = useState(0)
+  const frameCount = 75
+
+  const { scrollY, scrollYProgress } = useScroll()
+
+  const [apiSelect, setApiSelect] = useState(null)
+
+  // window.addEventListener("scroll", ()=>{
+  //   const html = document.documentElement
+  //   const fraction = html.scrollTop / (html.scrollHeight - window.innerHeight)
+  //   const index = Math.min(frameCount - 1, Math.ceil(fraction * frameCount))
+  //   console.log(index)
+  //   setFrame(index)
+  // })
+
+  const resetScroll = () => {
+    window.scrollTo(0, 0)
+  }
+
+  const [nft, setNft] = useState<boolean>(false)
+
+  useMotionValueEvent(scrollYProgress, 'change', (last) => {
+    const html = document.documentElement
+    const fraction = html.scrollTop / (html.scrollHeight - window.innerHeight)
+    const index = Math.min(frameCount - 1, Math.ceil(fraction * frameCount))
+    index > 20 ? setFireball(true) : setFireball(false)
+    index > 28 ? setMagic(true) : setMagic(false)
+    index > 15 ? setNav(true) : setNav(false)
+    index > 49 ? setNft(true) : null
+    setFrame(index)
+  })
+
+  useEffect(() => {
+    const img = new Image()
+    const canvas = canvasRef.current
+    img.onload = () => {
+      if (canvas) {
+        const context = canvas.getContext('2d')
+
+        if (context) {
+          context.fillRect(10, 10, context.canvas.width, context.canvas.height)
+          context.drawImage(img, 0, 0)
+        }
+      }
+    }
+    img.src = `/sequence/d${frame}.png`
+  }, [frame])
+
+  const [comments, setComments] = useState<CommentsInterface[] | null>(null)
+  const [wallet, setWallet] = useState<string | null>(null)
+  const [acc, setAcc] = useState<string | null>(null)
+
+  const initial = async () => {
+    const comments = await getAllComments()
+
+    if (comments.status == 200) {
+      setComments(comments.data)
+    }
+  }
+
+  const connectWallet = async () => {
+    if (typeof window !== 'undefined' && window?.ethereum) {
+      try {
+        const accounts: string[] = await window?.ethereum.request({ method: 'eth_requestAccounts' })
+        if (accounts && accounts.length > 0) {
+          // localStorage.setItem("wallet_hex", accounts[0])
+          const balanceWei = await provider.getBalance(accounts[0])
+          const convertHEX = formatEther(balanceWei)
+          console.log("Balance : ", convertHEX)
+          setAcc(accounts[0])
+          setWallet(convertHEX)
+        }
+      } catch {
+        console.log("Logged Error")
+      }
+    } else {
+      console.log("Metamask not detected")
+    }
+  }
+
+  const [URL, setURL] = useState<{ path: string, method: string } | null>(null)
+
+  const [output, setOutput] = useState<null | object[]>(null)
+
+  const TestingApi = (endpoint: string, type: string): void => {
+    axios.get(`${endpoint}`).then((res) => {
+      setOutput(res.data)
+    })
+  }
+
+  useEffect(() => {
+    initial()
+  }, [refresh])
+
+  let [mounted, setMounted] = useState<boolean>(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null;
+  }
+
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div ref={scrollRef} className={`${theme == 'dark' ? 'bg-[#0e1111]' : 'bg-white'} duration-[0.5s] max-[1024px]:h-[1050vh] max-[390px]:h-[1100vh]`}>
+      <motion.div initial={{ position: 'sticky', top: -60, left: 0 }} animate={nav ? { position: 'sticky', top: 0, left: 0 } : { position: 'sticky', top: -60, left: 0 }} className={`w-full h-[60px] bg-[#28282B] border-b-[5px] border-black/70 flex items-center justify-between p-[20px] z-[10]`}>
+        {/* <div className="flex gap-[20px]">
+          <p className="font-[medium] text-white text-[18px]">Explore</p>
+          <p className="font-[medium] text-white text-[18px]">Work</p>
+          <p className="font-[medium] text-white text-[18px]">Skills</p>
+          <p className="font-[medium] text-white text-[18px]">Experience</p>
+          <p className="font-[medium] text-white text-[18px]">Contact</p>
+        </div> */}
+
+        <div>
+          <p onClick={() => {
+            resetScroll()
+          }} className="font-[medium] text-white text-[18px] cursor-pointer">p1ay2.14</p>
         </div>
-      </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+        <div className="flex items-center gap-[20px]">
+          {!acc ? <div onClick={() => {
+            connectWallet()
+          }} className="p-[10px] h-[35px] bg-white/80 rounded-[8px] flex justify-center items-center gap-[5px] cursor-pointer hover:bg-white duration-[0.2s]">
+            <img src="/fox.png" className="w-[30px]"></img>
+            <p className="font-[medium]">METAMASK</p>
+          </div> : <div className="flex flex-col items-end">
+            <p className="font-[regular] text-white w-[200px] overflow-hidden text-ellipsis">{acc}</p>
+            <p className="font-[light] text-white text-[14px]">{Number(wallet).toFixed(2)} ETH</p>
+          </div>}
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+          <div onClick={() => {
+            setTheme(theme == 'light' ? 'dark' : 'light')
+          }} className={`w-[60px] h-[30px] ${theme == 'light' ? 'bg-green-600' : 'bg-gray-400'} rounded-full flex items-center relative cursor-pointer`}>
+            <div className={`w-[45%] h-[80%] bg-white rounded-full absolute duration-[0.3s] flex justify-center items-center ${theme == 'light' ? 'left-7' : 'left-1'}`}>
+              {theme == 'light' ? <img src="/sun.png" className="w-[20px]"></img> : <img src="/moon.png" className="w-[20px]"></img>}
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+      <CustomAlert />
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+      {/* <TimeLine /> */}
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      <main className={`w-full duration-[0.2s] p-[10px] flex gap-[10px] max-[390px]:flex-col`}>
+
+        {/* LeftBar */}
+        <div className="bg-[#28282B] w-[300px] rounded-[8px] p-[20px] max-[390px]:w-[100%]">
+
+          <div className="flex gap-[10px]">
+            <div className="w-[120px] h-[120px] bg-blue-400/30 rounded-[8px] flex justify-center items-end">
+              <motion.img initial={{ opacity: 0, translateY: 30 }} transition={{ duration: 0.5, ease: 'easeInOut' }} animate={{ opacity: 1, translateY: 0 }} alt="profile" src={'/profile/profiles.png'} className="w-[80px] h-[150px]"></motion.img>
+            </div>
+            <div className="flex flex-col justify-between">
+              <div className="w-[120px]">
+                <p className="text-white font-[bold]">p1ay2.14</p>
+                {/* <p className="font-[light] text-[14px] text-white mt-[5px]">wpm 71</p> */}
+              </div>
+              <div className="flex gap-[5px]">
+                <p className="text-gray-400 font-[medium]">WPM</p>
+                <p className="text-white font-[bold]">71 - 102</p>
+              </div>
+            </div>
+          </div>
+
+          <div className=" w-full h-[40px] bg-green-600/20 backdrop-blur-[5px] mt-[10px] rounded-[8px] flex justify-center items-center">
+            <p className="font-[medium] text-green-600 text-[16px]">About Me</p>
+          </div>
+
+
+          <div className="border-b-[2px] border-gray-600 mt-[10px]"></div>
+
+
+          <div className="mt-[10px]">
+            <div className="flex gap-[5px] items-center">
+              <p className="font-[medium] text-white">Education</p>
+              <FaBookBookmark size={20} className="text-white" />
+            </div>
+
+            <div className="bg-blue-400/30 rounded-[8px] w-[70px] h-[30px] flex justify-center items-center mt-[10px]">
+              <p className="font-[medium] text-blue-300">School</p>
+            </div>
+
+            <div className="flex gap-[10px] items-center">
+              <NextImage className="w-[50px] h-[50px] mt-[10px] rounded-full" alt="logo" width={50} height={50} src={'/education/pattanavit.jpg'}></NextImage>
+              <div>
+                <p className="font-[regular] text-white text-[14px]">Grade 1 - 6</p>
+                <p className="font-[regular] text-white text-[14px]">Pattanavit Sueksa</p>
+              </div>
+            </div>
+
+            <div className="flex gap-[10px] items-center">
+              <NextImage className="w-[50px] h-[50px] mt-[10px] rounded-full" alt="logo" width={50} height={50} src={'/education/sanpatong.jpg'}></NextImage>
+              <div>
+                <p className="font-[regular] text-white text-[14px]">Grade 7 - 12</p>
+                <p className="font-[regular] text-white text-[14px]">Sanpatong Wittayakom</p>
+              </div>
+            </div>
+
+            <div className="bg-blue-400/30 rounded-[8px] w-[100px] h-[30px] flex justify-center items-center mt-[10px]">
+              <p className="font-[medium] text-blue-300">University</p>
+            </div>
+
+            <div className="flex gap-[10px] items-center">
+              <NextImage className="w-[50px] h-[50px] object-cover mt-[10px] rounded-full" alt="logo" width={50} height={50} src={'/education/cmu.png'}></NextImage>
+              <div>
+                <p className="font-[regular] text-white text-[14px]">years 1st</p>
+                <p className="font-[regular] text-white text-[14px]">Chiangmai University</p>
+              </div>
+            </div>
+
+            <div className="border-b-[2px] border-gray-600 mt-[20px]"></div>
+
+            <div className="flex gap-[5px] items-center mt-[10px]">
+              <p className="font-[medium] text-white">Languages</p>
+              <AiTwotoneCode size={30} className="text-white" />
+            </div>
+
+
+            <div className="flex items-center justify-between">
+              <div className="mt-[10px] bg-[#808080]/20 w-[90px] rounded-full h-[30px] flex justify-center items-center">
+                <p className="text-gray-400 text-[14px]">Javascript</p>
+              </div>
+              <p className="font-[light] text-white text-[14px]">Expert</p>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="mt-[10px] p-[5px] bg-[#808080]/20 w-[90px] rounded-full h-[30px] flex justify-center items-center">
+                <p className="text-gray-400 text-[14px]">Typescript</p>
+              </div>
+              <p className="font-[light] text-white text-[14px]">Expert</p>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="mt-[10px] p-[5px] bg-[#808080]/20 w-[80px] rounded-full h-[30px] flex justify-center items-center">
+                <p className="text-gray-400 text-[14px]">MySQL</p>
+              </div>
+              <p className="font-[light] text-white text-[14px]">Expert</p>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="mt-[10px] p-[5px] bg-[#808080]/20 w-[60px] rounded-full h-[30px] flex justify-center items-center">
+                <p className="text-gray-400 text-[14px]">C++</p>
+              </div>
+              <p className="font-[light] text-white text-[14px]">Intermediate</p>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="mt-[10px] p-[5px] bg-[#808080]/20 w-[80px] rounded-full h-[30px] flex justify-center items-center">
+                <p className="text-gray-400 text-[14px]">Python</p>
+              </div>
+              <p className="font-[light] text-white text-[14px]">Intermediate</p>
+            </div>
+
+          </div>
+
+          <div className="border-b-[2px] border-gray-600 mt-[20px]"></div>
+
+          <div className="mt-[20px] w-full h-[200px] sticky top-20 left-0 flex flex-col max-[390px]:hidden">
+            <a href="#api" className="font-[regular] text-white">API Testing</a>
+            <a href="#youtube" className="font-[regular] text-white">Youtube</a>
+            <a href="#nft" className="font-[regular] text-white">NFT</a>
+          </div>
+
+
+        </div>
+
+        {/* RightSide */}
+
+        <div className="flex-col w-[100%] max-[1024px]:w-[450px] flex gap-[10px] max-[390px]:w-[100%]">
+          <div className="w-full bg-[#28282B] rounded-[8px] flex justify-center items-center gap-[80px] max-[1024px]:flex-col max-[1024px]:gap-[20px] p-[20px]">
+            <RadarChart onMouseMove={() => {
+              setRadarHover(true)
+            }} onMouseLeave={() => {
+              setRadarHover(false)
+            }} outerRadius={90} className="" width={330} height={250} data={data}>
+              <PolarGrid />
+              <PolarAngleAxis dataKey={'subject'}></PolarAngleAxis>
+              <Radar className="duration-[0.3s]" dataKey={"A"} stroke="#8884d8" fill="#8884d8" fillOpacity={radarHover ? 0.8 : 0.6} />
+              {/* <Radar dataKey={"B"} stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} /> */}
+            </RadarChart>
+
+            <div className="flex flex-col gap-[20px]">
+              <div>
+                <p className="font-[light] text-white">Endurance</p>
+                <div className=" w-[700px] max-[1440px]:w-[600px] max-[1024px]:w-[380px] max-[390px]:w-[300px] h-[7px] bg-orange-400 rounded-full">
+                  <motion.div initial={{ width: 0 }} animate={{ width: '85%' }} transition={{ duration: 2 }} className="bg-orange-700/70 h-full rounded-full"></motion.div>
+                </div>
+              </div>
+              <div>
+                <p className="font-[light] text-white">Multitask</p>
+                <div className=" w-[700px] max-[1440px]:w-[600px] max-[1024px]:w-[380px] max-[390px]:w-[300px] h-[7px] bg-red-400 rounded-full">
+                  <motion.div initial={{ width: 0 }} animate={{ width: '75%' }} transition={{ duration: 2 }} className="bg-red-700/70 h-full rounded-full"></motion.div>
+                </div>
+              </div>
+              <div>
+                <p className="font-[light] text-white">Responsibility</p>
+                <div className=" w-[700px] max-[1440px]:w-[600px] max-[1024px]:w-[380px] max-[390px]:w-[300px] h-[7px] bg-green-400 rounded-full">
+                  <motion.div initial={{ width: 0 }} animate={{ width: '99%' }} transition={{ duration: 2 }} className="bg-green-700/70 h-full rounded-full"></motion.div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="w-[100%] h-[240px] bg-[#28282B] rounded-[8px] flex items-center gap-[50px] p-[30px] max-[1024px]:flex-col max-[1024px]:h-[500px] max-[1024px]:gap-[80px]">
+            {/* <div onClick={() => { 
+              setTheme(theme == 'light' ? 'dark' : 'light')
+            }} className={` w-[200px] h-[50px] rounded-full relative ${theme == 'light' ? 'bg-green-600' : 'bg-gray-400'}`}>
+              <div className={`w-[40%] h-[80%] bg-white duration-[0.3s] rounded-full absolute top-1 ${theme == 'light' ? 'left-11' : 'left-1'}`}>
+
+              </div>
+            </div> */}
+            <div className="flex gap-[10px] relative">
+              <div className="w-[300px] h-[180px] flex overflow-x-scroll snap-x snap-mandatory scroll-smooth gap-[10px] rounded-[8px]" ref={imgRef}>
+                {banners && banners.length > 0 ? banners.map((item, index: number) => {
+                  return (
+                    <div key={index} className="w-full h-full flex-shrink-0 relative">
+                      <NextImage src={item.src} alt="banner-img" width={1000} height={1000} className="snap-center w-full rounded-[8px] h-full object-cover"></NextImage>
+                    </div>
+                  )
+                }) : null}
+              </div>
+              <div className="flex gap-[10px]">
+                <div onClick={() => {
+                  imgRef.current.scrollLeft -= 180
+                }} className="w-[40px] h-[40px] bg-white/60 rounded-[8px] backdrop-blur-[5px] absolute top-[40%] trnaslate-y-[-50%] left-3 cursor-pointer flex justify-center items-center">
+                  <FaArrowUp className="rotate-[-90deg]" size={22} />
+                </div>
+                <div onClick={() => {
+                  imgRef.current.scrollLeft += 180
+                }} className="w-[40px] h-[40px] bg-white/60 backdrop-blur-[5px] rounded-[8px] absolute top-[40%] trnaslate-y-[-50%] right-6 cursor-pointer flex justify-center items-center">
+                  <FaArrowUp className="rotate-[90deg]" size={22} />
+                </div>
+              </div>
+            </div>
+
+            {/* <Canvas style={{ width: 200 }}>
+              <ambientLight />
+              <Cube />
+              <OrbitControls enableZoom={false} enableRotate={false} />
+            </Canvas> */}
+
+            {/* <Canvas style={{ width: 230 }}>
+              <ambientLight />
+              <Wawa />
+              <OrbitControls enableZoom={true} enableRotate={true} />
+            </Canvas> */}
+
+            <div className="w-[3px] h-full bg-white/60 backdrop-blur-[5px] rounded-full max-[1024px]:hidden"></div>
+
+
+
+            <div className="relative h-full w-[700px] max-[1024px]:w-[350px] max-[390px]:w-[310px]">
+
+              <div onClick={() => {
+                projectRef.current.scrollLeft -= 220
+              }} className="w-[30px] absolute left-[-40px] top-0 h-full bg-transparent cursor-pointer"></div>
+              <div onClick={() => {
+                projectRef.current.scrollLeft += 220
+              }} className="w-[30px] absolute right-[-40px] top-0 h-full bg-transparent cursor-pointer"></div>
+
+              <div ref={projectRef} className="flex w-full h-full gap-[30px] overflow-x-scroll scroll-smooth items-center">
+
+                <motion.div whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: 3 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px]">
+                  <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                    <p className="font-[bold]">Trading Board</p>
+                  </div>
+
+                  <NextImage alt="e-learning" src={'/trade.png'} width={200} height={200} className="w-full h-full rounded-[8px]"></NextImage>
+
+                  <div onClick={() => {
+                    two.fire('Do you want to enter this?', false, true)
+                  }} className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 backdrop-blur-[5px] w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                    <p className="font-[medium] text-blue-400">Visit</p>
+                  </div>
+
+                </motion.div>
+
+                <motion.div whileHover={{ skewY: 0 }} transition={{ delay: 0.1 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: -2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative">
+                  <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                    <p className="font-[bold]">Wanfah Lottery</p>
+                  </div>
+
+                  <NextImage alt="wanfah" src={'/banners/wanfah.png'} width={500} height={500} className="w-full h-full rounded-[8px] object-cover object-left-top"></NextImage>
+
+                  <div className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                    <p className="font-[medium] text-blue-400">Visit</p>
+                  </div>
+
+                </motion.div>
+
+
+                <Suspense fallback={<p className="text-white">Test</p>}>
+                  <motion.div whileHover={{ skewY: 0 }} transition={{ delay: 0.2 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: 2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[2deg] relative">
+                    <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                      <p className="font-[bold]">Stock Management</p>
+                    </div>
+
+                    <NextImage alt="stocks" src={'/banners/stocks.png'} width={500} height={500} className="w-full h-full rounded-[8px] object-cover object-left-top"></NextImage>
+
+                    <div className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                      <p className="font-[medium] text-blue-400">Visit</p>
+                    </div>
+
+                  </motion.div>
+                </Suspense>
+
+                <motion.div whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: -2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative">
+                  <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                    <p className="font-[bold]">WhalePOS</p>
+                  </div>
+
+                  <NextImage alt="wanfah" src={'/banners/wanfah.png'} width={500} height={500} className="w-full h-full rounded-[8px] object-cover object-left-top"></NextImage>
+
+                  <div className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                    <p className="font-[medium] text-blue-400">Visit</p>
+                  </div>
+
+                </motion.div>
+
+                <motion.div whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: 2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative">
+                  <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                    <p className="font-[bold]">Car Detection</p>
+                  </div>
+
+                  <NextImage alt="wanfah" src={'/banners/wanfah.png'} width={500} height={500} className="w-full h-full rounded-[8px] object-cover object-left-top"></NextImage>
+
+                  <div className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                    <p className="font-[medium] text-blue-400">Visit</p>
+                  </div>
+
+                </motion.div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* <div className="w-[100%] h-[240px] bg-[#28282B] rounded-[8px] flex items-center gap-[50px] p-[30px]"></div> */}
+
+          {/* Image Sequence */}
+
+          <div className="flex gap-[20px] max-[1024px]:flex-col">
+            <canvas ref={canvasRef} className="w-[500px] h-[300px] max-[1024px]:w-[450px] max-[390px]:w-[370px] max-[390px]:h-[270px] rounded-[8px]" width={1920} height={1080}></canvas>
+            {/* <motion.div initial={{ opacity: 0 }} transition={{ duration: 0.3 }} animate={frame > 40 ? { opacity: 1 } : { opacity: 0 }} className="flex flex-col justify-center items-center w-full">
+              <p className="font-[medium] text-[30px] text-white">CODING IS NOT DIFFERENT WITH</p>
+              <p className="font-[light] text-[24px] text-white">THE MAGIC</p>
+            </motion.div> */}
+
+            <div className="w-[350px] max-[1024px]:w-[450px] h-full bg-[#28282B] rounded-[8px] p-[20px] flex flex-col relative max-[390px]:w-[370px]">
+              <div className="flex gap-[10px] items-center">
+                <p className="font-[medium] text-[16px] text-white">Comments</p>
+                <AiFillMessage size={20} className="text-white" />
+              </div>
+
+              <div className="h-[180px] overflow-scroll">
+                {comments && comments.length > 0 ? comments.map((item: CommentsInterface, index: number) => {
+                  return (
+                    <div key={index} className="flex text-black mt-[10px] flex-col w-full h-[30px] bg-white/80 rounded-[8px] justify-center p-[5px]">
+                      {/* <p className="font-[kn-light]">ผู้ส่ง : {item.sender}</p> */}
+                      <div className="flex justify-between">
+                        <p className="font-[kn-regular] select-none">{item.text}</p>
+                        <div className="flex items-center gap-[5px]">
+                          <IoIosHeartEmpty onClick={() => {
+                            LikeMessage(item.mid).then((res) => {
+                              if (res.status == 200) {
+                                setRefresh(refresh + 1)
+                              }
+                            })
+                          }} size={15} className="cursor-pointer" />
+                          <p className="font-[medium] text-[12px]">{item.likes} Likes</p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }) : null}
+              </div>
+
+              <div className="w-[90%] h-[40px] bg-white/20 rounded-[8px] absolute bottom-2 left-[50%] translate-x-[-50%] flex items-center p-[10px] justify-between cursor-pointer">
+                <p className="font-[kn-light] text-white/60 pointer-events-none select-none">เขียนอะไรซักหน่อยสิ!</p>
+                <BiSolidMessageSquareDetail size={20} className="text-white" />
+              </div>
+            </div>
+
+            <div>
+              <AreaChart width={320} height={300} data={dataChart}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                {/* <XAxis dataKey="name" />
+                <YAxis />
+                <CartesianGrid strokeDasharray="1" /> */}
+                <Tooltip />
+                <Area type="monotone" dataKey="uv" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
+                <Area type="monotone" dataKey="pv" stroke="#82ca9d" fillOpacity={1} fill="url(#colorPv)" />
+              </AreaChart>
+
+            </div>
+          </div>
+
+          <div id="api" className="flex gap-[10px] mt-[5px] max-[1024px]:flex-col">
+            <div className="w-[500px] max-[1024px]:w-[450px] bg-[#28282B] rounded-[8px] p-[10px] max-[390px]:w-[370px]">
+
+              <p className="font-[bold] text-white mb-[10px] text-center text-[20px]">TRY MY API !</p>
+
+              <div className="flex flex-col gap-[10px]">
+                <div onClick={() => {
+                  setURL({ path: 'http://localhost:3001/api/product', method: "GET" })
+                }} className="flex items-center gap-[10px] bg-black/20 rounded-[8px] p-[5px]">
+                  <div className="w-[60px] h-[30px] bg-green-500 rounded-[8px] flex justify-center items-center text-white">
+                    <p className="font-[medium]">GET</p>
+                  </div>
+                  <p className="font-[light] text-white">/products</p>
+                </div>
+
+                <div className="flex items-center gap-[10px] bg-black/20 rounded-[8px] p-[5px]">
+                  <div className="w-[60px] h-[30px] bg-green-500 rounded-[8px] flex justify-center items-center text-white">
+                    <p className="font-[medium]">GET</p>
+                  </div>
+                  <p className="font-[light] text-white">/products/:id</p>
+                </div>
+
+                <div className="flex items-center gap-[10px] bg-black/20 rounded-[8px] p-[5px]">
+                  <div className="w-[60px] h-[30px] bg-blue-600 rounded-[8px] flex justify-center items-center text-white">
+                    <p className="font-[medium]">POST</p>
+                  </div>
+                  <p className="font-[light] text-white">/product</p>
+                </div>
+
+                <div className="flex items-center gap-[10px] bg-black/20 rounded-[8px] p-[5px]">
+                  <div className="w-[60px] h-[30px] bg-blue-600 rounded-[8px] flex justify-center items-center text-white">
+                    <p className="font-[medium]">PUT</p>
+                  </div>
+                  <p className="font-[light] text-white">/product/:id</p>
+                </div>
+
+                <div className="flex items-center gap-[10px] bg-black/20 rounded-[8px] p-[5px]">
+                  <div className="w-[60px] h-[30px] bg-blue-600 rounded-[8px] flex justify-center items-center text-white">
+                    <p className="font-[medium]">PATCH</p>
+                  </div>
+                  <p className="font-[light] text-white">/product/:id</p>
+                </div>
+
+                <div className="flex items-center gap-[10px] bg-black/20 rounded-[8px] p-[5px]">
+                  <div className="w-[60px] h-[30px] bg-red-600 rounded-[8px] flex justify-center items-center text-white">
+                    <p className="font-[medium]">DELETE</p>
+                  </div>
+                  <p className="font-[light] text-white">/product/:id</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full bg-[#28282B] max-[1024px]:h-[300px] rounded-[8px] p-[10px]">
+              <div className="bg-black/50 w-full h-full rounded-[8px] p-[10px] flex">
+                <div className="w-[250px] h-full border-r-[1px] border-gray-500 text-white text-[14px] gap-[10px] flex flex-col relative">
+                  <div className="flex gap-[5px]">
+                    <div className="w-[10px] h-[10px] bg-red-600 rounded-full"></div>
+                    <div className="w-[10px] h-[10px] bg-yellow-600 rounded-full"></div>
+                    <div className="w-[10px] h-[10px] bg-green-600 rounded-full"></div>
+                  </div>
+                  <div>
+                    <div className="flex gap-[5px] items-center">
+                      <FaFolderOpen className="text-blue-400" size={15} />
+                      <p>node_modules</p>
+                    </div>
+                    <div className="flex gap-[5px] items-center">
+                      <BiLogoTypescript className="text-blue-600" size={15} />
+                      <p>index.ts</p>
+                    </div>
+                    <div className="flex gap-[5px] items-center">
+                      <FaNodeJs className="text-green-600/80" size={15} />
+                      <p>package-lock.json</p>
+                    </div>
+                    <div className="flex gap-[5px] items-center">
+                      <FaNodeJs className="text-green-600/80" size={15} />
+                      <p>package.json</p>
+                    </div>
+                  </div>
+
+                  <div onClick={() => {
+                    if (URL) {
+                      TestingApi(URL?.path, URL?.method)
+                    } else {
+                      alert("Please select endpoint!")
+                    }
+                  }} className="w-[95%] h-[35px] bg-purple-600 rounded-[8px] flex justify-center items-center font-[bold] text-[22px] absolute bottom-0">
+                    <p>Send</p>
+                  </div>
+
+                </div>
+
+                <div className="w-full h-full ml-[10px] relative">
+                  <MdGTranslate onClick={() => {
+                    setTranslate(!translate)
+                  }} size={20} className="text-white absolute right-0 bottom-0 cursor-pointer z-[1]" />
+                  {!translate ? <p className="font-[light] text-white">Greetings! This is "restful api testing" you can try to calling my API Service with SEND BUTTON or your own code.</p> : <p className="font-[kn-light] text-white">สวัสดีครับ! ในส่วนนี้เป็น "restful api testing" ทุกคนสามารถเรียก API โดยผ่านปุ่ม SEND หรือโค้ดของคุณเอง.</p>}
+
+                  <div className="w-full bg-black/30 absolute bottom-0 p-[5px] rounded-[8px]">
+                    <p className="font-[light] text-white">{URL?.path ? URL.path : null}</p>
+                    <div className="flex gap-[5px]">
+                      <p className="font-[light] text-white mt-[10px]">output : </p>
+                      <pre className="font-[light] text-white">{JSON.stringify(output, null, 4)}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="flex justify-center items-center mt-[10px] gap-[80px] bg-[#28282B] p-[20px] rounded-[8px] max-[1024px]:flex-col max-[1024px]:gap-[20px]">
+
+            <div className="flex flex-col items-end">
+              <p className="font-[bold] text-[20px] text-white">Sticker Line</p>
+              <a target="_blank" className="text-blue-400 text-[14px] " href="https://store.line.me/stickershop/product/25620125/th">https://store.line.me/stickersh...</a>
+
+              <p className="font-[kn-light] text-white text-[14px]">สติ๊กเกอร์ไลน์วาฬฟ้าสุดน่ารักแสดงความรู้สึก</p>
+            </div>
+
+            <div className="flex flex-col gap-[0px]">
+              <div>
+                <NextImage width={500} height={150} alt="line" className="w-[500px] h-[150px] object-cover rounded-[8px] shadow-md shadow-white" src="/line_sticker.png"></NextImage>
+              </div>
+            </div>
+
+          </div>
+
+
+          <div className="w-full flex justify-center items-center gap-[70px] max-[1024px]:w-[200px] max-[1024px]:gap-[10px] max-[1024px]:justify-start max-[390px]:flex-col max-[390px]:items-center max-[390px]:justify-center max-[390px]:w-[100%]">
+            <motion.img initial={{ translateY: 200, opacity: 0 }} animate={fireball ? { translateY: 0, opacity: 1 } : { translateY: 200, opacity: 0 }} src="/fireball5.png" className="w-[400px]"></motion.img>
+
+            <div className="flex flex-col items-end">
+              <p className="font-[bold] text-[20px] text-white">My Contact</p>
+              {/* <a className="text-blue-400 text-[14px] " href="https://store.line.me/stickershop/product/25620125/th">https://store.line.me/stickersh...</a> */}
+
+              <p className="font-[kn-light] text-white text-[14px]">ใช้สำหรับติดต่องานเขียนเว็บไซต์ & เขียนโปรแกรม</p>
+
+              <div className="flex gap-[10px] text-white">
+                <FaFacebook size={20} />
+                <FaInstagram size={20} />
+                <SiGmail size={20} />
+              </div>
+
+              <a target="_blank" className="text-blue-400 mt-[20px] text-[14px]" href="https://www.facebook.com/Ratanon.Boonmata.PlayTwo">https://www.facebook.com/Ratano...</a>
+            </div>
+          </div>
+
+          <div className="w-full flex justify-center items-center gap-[70px] min-[390px]:gap-[20px] ">
+
+            <div className="flex flex-col items-end">
+              <p className="font-[bold] text-[20px] text-white">Experience</p>
+              {/* <a className="text-blue-400 text-[14px] " href="https://store.line.me/stickershop/product/25620125/th">https://store.line.me/stickersh...</a> */}
+
+              <p className="font-[kn-light] text-white text-[14px]">- ยังไม่มีประสบการณ์ทำงาน</p>
+
+              {/* <a target="_blank" className="text-blue-400 mt-[20px] text-[14px]" href="https://www.facebook.com/Ratanon.Boonmata.PlayTwo">https://www.facebook.com/Ratano...</a> */}
+            </div>
+
+
+            <motion.img initial={{ translateY: 200, opacity: 0 }} animate={magic ? { translateY: 0, opacity: 1 } : { translateY: 200, opacity: 0 }} src="/magic.png" className="w-[400px] max-[1024px]:w-[200px]"></motion.img>
+          </div>
+
+
+          <div id="youtube" className="w-full bg-transparent p-[10px] grid grid-cols-3 gap-[20px] place-items-center max-[1024px]:grid-cols-1">
+            <div className="flex flex-col gap-[10px]">
+              <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/GVUBEyJ9ic4?si=cfv8zvRjMP-Di-kf" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+              </div>
+              <div className="flex flex-col items-start space-y-[-2px]">
+                <p className="font-[kn-regular] text-white">บทความการใช้งาน Docker เบื้องต้น</p>
+                <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-[10px]">
+              <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/2przKmhHq9E?si=ve8BzHD1d0KZKTga" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+              </div>
+              <div className="flex flex-col items-start space-y-[-2px]">
+                <p className="font-[kn-regular] text-white">บทความการใช้งาน Github เบื้องต้น</p>
+                <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-[10px]">
+              <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/jxH3uaIC3gM?si=aHFULxWP9OKy2SNd" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+              </div>
+              <div className="flex flex-col items-start space-y-[-2px]">
+                <p className="font-[kn-regular] text-white">ดึง API ด้วย Python ใน 2 นาที</p>
+                <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-[10px]">
+              <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/NIkp3iHIj9I?si=BzjrGCoKD3EK3p9A" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+              </div>
+              <div className="flex flex-col items-start space-y-[-2px]">
+                <p className="font-[kn-regular] text-white">React + Electron สร้าง Desktop App</p>
+                <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-[10px]">
+              <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/gmGsljeagnw?si=PhGTA5KoEw2M0tzu" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+              </div>
+              <div className="flex flex-col items-start space-y-[-2px]">
+                <p className="font-[kn-regular] text-white">Javascript ภายใน 3 นาที ?</p>
+                <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-[10px]">
+              <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/1VDIGd5bxgo?si=rkKAdEkPuKbjVutE" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+              </div>
+              <div className="flex flex-col items-start space-y-[-2px]">
+                <p className="font-[kn-regular] text-white">UseMemo คืออะไร ?</p>
+                <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
+              </div>
+            </div>
+          </div>
+
+
+          <div id="nft" className="w-full h-[60px] bg-transparent flex justify-center items-center mt-[50px]">
+            <div className="flex flex-col items-center">
+              <p className="font-[medium] text-white text-[20px]">STEP TO WEBSITE 3.0</p>
+              <p onClick={() => {
+
+              }} className="font-[light] text-white text-[16px]">BUY NFT</p>
+            </div>
+          </div>
+
+          <motion.div initial={{ opacity: 0 }} animate={nft ? { opacity: 1, translateY: 0 } : { opacity: 0, translateY: 50 }} className="w-full p-[10px] gap-[60px] flex justify-center items-center mt-[50px] max-[1024px]:flex-col">
+            <div>
+              <div className="w-[300px] h-[400px] bg-red-600">
+                <NextImage alt="cat" src="/whales/cat3.jpg" width={300} height={400} className="w-full h-full object-cover"></NextImage>
+              </div>
+              <div className="flex flex-col gap-[10px] mt-[20px]">
+                <div>
+                  <p className="font-[light] text-white w-[180px] overflow-hidden text-ellipsis">0xd9bfE7d4BB81A0F26a89525217E344b73F29a64D</p>
+                  <p className="font-[medium] text-white text-[18px]">0.035 ETH</p>
+                </div>
+                <div className="w-[130px] h-[35px] bg-green-700 flex justify-center items-center rounded-[8px]">
+                  <p className="text-white font-[medium]">Buy NFT</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="w-[300px] h-[400px] bg-red-600">
+                <NextImage alt="cat" src="/whales/cat1.jpg" width={300} height={400} className="w-full h-full object-cover"></NextImage>
+              </div>
+              <div className="flex flex-col gap-[10px] mt-[20px]">
+                <div>
+                  <p className="font-[light] text-white w-[180px] overflow-hidden text-ellipsis">0xd9bfE7d4BB81A0F26a89525217E344b73F29a64D</p>
+                  <p className="font-[medium] text-white text-[18px]">0.035 ETH</p>
+                </div>
+                <div className="w-[130px] h-[35px] bg-green-700 flex justify-center items-center rounded-[8px]">
+                  <p className="text-white font-[medium]">Buy NFT</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="w-[300px] h-[400px] bg-red-600">
+                <NextImage alt="cat" src="/whales/cat2.jpg" width={300} height={400} className="w-full h-full object-cover"></NextImage>
+              </div>
+              <div className="flex flex-col gap-[10px] mt-[20px]">
+                <div>
+                  <p className="font-[light] text-white w-[180px] overflow-hidden text-ellipsis">0xd9bfE7d4BB81A0F26a89525217E344b73F29a64D</p>
+                  <p className="font-[medium] text-white text-[18px]">0.035 ETH</p>
+                </div>
+                <div className="w-[130px] h-[35px] bg-green-700 flex justify-center items-center rounded-[8px]">
+                  <p className="text-white font-[medium]">Buy NFT</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
+
+      </main>
+
+      <Footer />
+
+    </div>
   );
 }

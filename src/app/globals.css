@@ -2,32 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+@font-face {
+  font-family: 'light';
+  src: url('../../public/fonts/Poppins-Light.ttf');
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+@font-face {
+  font-family: 'medium';
+  src: url('../../public/fonts/Poppins-Medium.ttf');
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@font-face {
+  font-family: 'regular';
+  src: url('../../public/fonts/Poppins-Regular.ttf');
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@font-face {
+  font-family: 'bold';
+  src: url('../../public/fonts/Poppins-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'kn-light';
+  src: url('../../public/fonts/Kanit-Light.ttf');
+}
+
+@font-face {
+  font-family: 'kn-medium';
+  src: url('../../public/fonts/Kanit-Medium.ttf');
+}
+
+@font-face {
+  font-family: 'kn-regular';
+  src: url('../../public/fonts/Kanit-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'kn-bold';
+  src: url('../../public/fonts/Kanit-Bold.ttf');
+}
+
+::-webkit-scrollbar{
+  display: none;
+}
+
+html{
+  scroll-behavior: smooth;
+}
+
+.texting{
+  width: 15ch;
+  animation: typing 5s steps(15);
+}
+
+@keyframes typing {
+  0%{
+    width: 0;
   }
 }
