@@ -4,7 +4,7 @@ import NextImage from "next/image";
 import { useAppContext } from "./index";
 import { FaBookBookmark, FaFacebook, FaFolderOpen, FaInstagram, FaNodeJs } from "react-icons/fa6";
 import { AiFillMessage, AiTwotoneCode } from "react-icons/ai";
-import { Legend, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area } from "recharts";
+import { Legend, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area, ResponsiveContainer } from "recharts";
 import { frame, motion, useMotionValueEvent } from 'framer-motion'
 import { FaArrowUp } from "react-icons/fa6";
 import { Suspense, useEffect, useRef, useState } from "react";
@@ -24,6 +24,8 @@ import { JsonRpcProvider, formatEther } from "ethers";
 import { transactionSend } from "../../methods/blockchain/transaction";
 import axios from 'axios'
 import { URI } from "../../config";
+import Lib from "./lib";
+import Head from "next/head";
 
 declare global {
   interface Window {
@@ -158,7 +160,10 @@ export default function Home() {
 
 
   return (
-    <div ref={scrollRef} className={`${theme == 'dark' ? 'bg-[#0e1111]' : 'bg-white'} duration-[0.5s] max-[1024px]:h-[1050vh] max-[390px]:h-[1100vh]`}>
+    <div ref={scrollRef} className={`${theme == 'dark' ? 'bg-[#0e1111]' : 'bg-white'} duration-[0.5s]`}>
+      <Head>
+        <link rel="shortcut icon" href="/favicon.ico"></link>
+      </Head>
       <motion.div initial={{ position: 'sticky', top: -60, left: 0 }} animate={nav ? { position: 'sticky', top: 0, left: 0 } : { position: 'sticky', top: -60, left: 0 }} className={`w-full h-[60px] bg-[#28282B] border-b-[5px] border-black/70 flex items-center justify-between p-[20px] z-[10]`}>
         {/* <div className="flex gap-[20px]">
           <p className="font-[medium] text-white text-[18px]">Explore</p>
@@ -177,9 +182,14 @@ export default function Home() {
         <div className="flex items-center gap-[20px]">
           {!acc ? <div onClick={() => {
             connectWallet()
-          }} className="p-[10px] h-[35px] bg-white/80 rounded-[8px] flex justify-center items-center gap-[5px] cursor-pointer hover:bg-white duration-[0.2s]">
+          }} className="p-[10px] relative h-[35px] bg-white/80 rounded-[8px] flex justify-center items-center gap-[5px] cursor-pointer hover:bg-white duration-[0.2s]">
             <img src="/fox.png" className="w-[30px]"></img>
             <p className="font-[medium]">METAMASK</p>
+            <div className="w-[15px] h-[15px] bg-green-600 rounded-full absolute right-[-5px] z-[1] top-[-5px]">
+              <div className="w-[15px] h-[15px] bg-green-700 rounded-full animate-ping absolute right-[0px] z-[1] top-[0px]">
+
+              </div>
+            </div>
           </div> : <div className="flex flex-col items-end">
             <p className="font-[regular] text-white w-[200px] overflow-hidden text-ellipsis">{acc}</p>
             <p className="font-[light] text-white text-[14px]">{Number(wallet).toFixed(2)} ETH</p>
@@ -199,23 +209,24 @@ export default function Home() {
 
       {/* <TimeLine /> */}
 
-      <main className={`w-full duration-[0.2s] p-[10px] flex gap-[10px] max-[390px]:flex-col`}>
+      <main className={`w-full duration-[0.2s] p-[10px] flex gap-[10px] max-[760px]:flex-col`}>
 
         {/* LeftBar */}
-        <div className="bg-[#28282B] w-[300px] rounded-[8px] p-[20px] max-[390px]:w-[100%]">
+        <div className="bg-[#28282B] w-[100%] rounded-[8px] p-[20px]">
 
           <div className="flex gap-[10px]">
             <div className="w-[120px] h-[120px] bg-blue-400/30 rounded-[8px] flex justify-center items-end">
-              <motion.img initial={{ opacity: 0, translateY: 30 }} transition={{ duration: 0.5, ease: 'easeInOut' }} animate={{ opacity: 1, translateY: 0 }} alt="profile" src={'/profile/profiles.png'} className="w-[80px] h-[150px]"></motion.img>
+              <motion.img transition={{ duration: 2, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' }} animate={{ translateY: [0, 10, 0] }} alt="profile" src={'/profile/mee.png'} className="w-[90px] h-[140px]"></motion.img>
             </div>
             <div className="flex flex-col justify-between">
               <div className="w-[120px]">
                 <p className="text-white font-[bold]">p1ay2.14</p>
+                <p className="text-white font-[kn-regular] text-[12px]">เพลย์ทู</p>
                 {/* <p className="font-[light] text-[14px] text-white mt-[5px]">wpm 71</p> */}
               </div>
               <div className="flex gap-[5px]">
                 <p className="text-gray-400 font-[medium]">WPM</p>
-                <p className="text-white font-[bold]">71 - 102</p>
+                <p className="text-white font-[bold]">81 - 102</p>
               </div>
             </div>
           </div>
@@ -258,11 +269,14 @@ export default function Home() {
               <p className="font-[medium] text-blue-300">University</p>
             </div>
 
-            <div className="flex gap-[10px] items-center">
-              <NextImage className="w-[50px] h-[50px] object-cover mt-[10px] rounded-full" alt="logo" width={50} height={50} src={'/education/cmu.png'}></NextImage>
+            <div className="flex gap-[10px] items-center mt-[10px]">
+              <NextImage className="w-[50px] h-[50px] object-cover rounded-full" alt="logo" width={50} height={50} src={'/education/cmu.png'}></NextImage>
               <div>
                 <p className="font-[regular] text-white text-[14px]">years 1st</p>
-                <p className="font-[regular] text-white text-[14px]">Chiangmai University</p>
+                <div>
+                  <p className="font-[regular] text-white text-[14px]">Chiangmai University</p>
+                  <p className=" text-white text-[14px] font-[kn-light]">สารสนเทศศึกษา</p>
+                </div>
               </div>
             </div>
 
@@ -299,24 +313,24 @@ export default function Home() {
               <div className="mt-[10px] p-[5px] bg-[#808080]/20 w-[60px] rounded-full h-[30px] flex justify-center items-center">
                 <p className="text-gray-400 text-[14px]">C++</p>
               </div>
-              <p className="font-[light] text-white text-[14px]">Intermediate</p>
+              <p className="font-[light] text-white text-[14px]">Expert</p>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="mt-[10px] p-[5px] bg-[#808080]/20 w-[80px] rounded-full h-[30px] flex justify-center items-center">
                 <p className="text-gray-400 text-[14px]">Python</p>
               </div>
-              <p className="font-[light] text-white text-[14px]">Intermediate</p>
+              <p className="font-[light] text-white text-[14px]">Expert</p>
             </div>
 
           </div>
 
           <div className="border-b-[2px] border-gray-600 mt-[20px]"></div>
 
-          <div className="mt-[20px] w-full h-[200px] sticky top-20 left-0 flex flex-col max-[390px]:hidden">
-            <a href="#api" className="font-[regular] text-white">API Testing</a>
-            <a href="#youtube" className="font-[regular] text-white">Youtube</a>
-            <a href="#nft" className="font-[regular] text-white">NFT</a>
+          <div className="mt-[20px] w-full h-[200px] sticky top-20 left-0 flex flex-col max-[760px]:hidden">
+            <a href="#api" className="font-[regular] text-white">: API Portal</a>
+            <a href="#youtube" className="font-[regular] text-white">: About Youtube</a>
+            {/* <a href="#nft" className="font-[regular] text-white"></a> */}
           </div>
 
 
@@ -324,35 +338,38 @@ export default function Home() {
 
         {/* RightSide */}
 
-        <div className="flex-col w-[100%] max-[1024px]:w-[450px] flex gap-[10px] max-[390px]:w-[100%]">
+        <div className="flex-col max-[760px]:w-[100%] w-[calc(100%-300px)] flex gap-[10px]">
           <div className="w-full bg-[#28282B] rounded-[8px] flex justify-center items-center gap-[80px] max-[1024px]:flex-col max-[1024px]:gap-[20px] p-[20px]">
-            <RadarChart onMouseMove={() => {
-              setRadarHover(true)
-            }} onMouseLeave={() => {
-              setRadarHover(false)
-            }} outerRadius={90} className="" width={330} height={250} data={data}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey={'subject'}></PolarAngleAxis>
-              <Radar className="duration-[0.3s]" dataKey={"A"} stroke="#8884d8" fill="#8884d8" fillOpacity={radarHover ? 0.8 : 0.6} />
-              {/* <Radar dataKey={"B"} stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} /> */}
-            </RadarChart>
 
-            <div className="flex flex-col gap-[20px]">
+            <div>
+              <RadarChart width={350} height={280} onMouseMove={() => {
+                setRadarHover(true)
+              }} onMouseLeave={() => {
+                setRadarHover(false)
+              }} outerRadius={90} data={data}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey={'subject'}></PolarAngleAxis>
+                <Radar className="duration-[0.3s] animate-pulse" dataKey={"A"} stroke="#8884d8" fill="#8884d8" fillOpacity={radarHover ? 0.8 : 0.6} />
+                {/* <Radar dataKey={"B"} stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} /> */}
+              </RadarChart>
+            </div>
+
+            <div className="flex flex-col gap-[20px] w-[600px] max-[1024px]:w-[400px] max-[431px]:w-[300px]">
               <div>
                 <p className="font-[light] text-white">Endurance</p>
-                <div className=" w-[700px] max-[1440px]:w-[600px] max-[1024px]:w-[380px] max-[390px]:w-[300px] h-[7px] bg-orange-400 rounded-full">
+                <div className=" w-[100%] h-[7px] bg-orange-400 rounded-full">
                   <motion.div initial={{ width: 0 }} animate={{ width: '85%' }} transition={{ duration: 2 }} className="bg-orange-700/70 h-full rounded-full"></motion.div>
                 </div>
               </div>
               <div>
                 <p className="font-[light] text-white">Multitask</p>
-                <div className=" w-[700px] max-[1440px]:w-[600px] max-[1024px]:w-[380px] max-[390px]:w-[300px] h-[7px] bg-red-400 rounded-full">
+                <div className=" w-[100%] max-[390px]:w-[300px] h-[7px] bg-red-400 rounded-full">
                   <motion.div initial={{ width: 0 }} animate={{ width: '75%' }} transition={{ duration: 2 }} className="bg-red-700/70 h-full rounded-full"></motion.div>
                 </div>
               </div>
               <div>
                 <p className="font-[light] text-white">Responsibility</p>
-                <div className=" w-[700px] max-[1440px]:w-[600px] max-[1024px]:w-[380px] max-[390px]:w-[300px] h-[7px] bg-green-400 rounded-full">
+                <div className=" w-[100%] h-[7px] bg-green-400 rounded-full">
                   <motion.div initial={{ width: 0 }} animate={{ width: '99%' }} transition={{ duration: 2 }} className="bg-green-700/70 h-full rounded-full"></motion.div>
                 </div>
               </div>
@@ -360,7 +377,7 @@ export default function Home() {
 
           </div>
 
-          <div className="w-[100%] h-[240px] bg-[#28282B] rounded-[8px] flex items-center gap-[50px] p-[30px] max-[1024px]:flex-col max-[1024px]:h-[500px] max-[1024px]:gap-[80px]">
+          <div className="h-[240px] bg-[#28282B] rounded-[8px] flex items-center gap-[50px] p-[30px] w-[100%]">
             {/* <div onClick={() => { 
               setTheme(theme == 'light' ? 'dark' : 'light')
             }} className={` w-[200px] h-[50px] rounded-full relative ${theme == 'light' ? 'bg-green-600' : 'bg-gray-400'}`}>
@@ -368,7 +385,7 @@ export default function Home() {
 
               </div>
             </div> */}
-            <div className="flex gap-[10px] relative">
+            {/* <div className="flex gap-[10px] relative">
               <div className="w-[300px] h-[180px] flex overflow-x-scroll snap-x snap-mandatory scroll-smooth gap-[10px] rounded-[8px]" ref={imgRef}>
                 {banners && banners.length > 0 ? banners.map((item, index: number) => {
                   return (
@@ -390,7 +407,7 @@ export default function Home() {
                   <FaArrowUp className="rotate-[90deg]" size={22} />
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* <Canvas style={{ width: 200 }}>
               <ambientLight />
@@ -404,11 +421,11 @@ export default function Home() {
               <OrbitControls enableZoom={true} enableRotate={true} />
             </Canvas> */}
 
-            <div className="w-[3px] h-full bg-white/60 backdrop-blur-[5px] rounded-full max-[1024px]:hidden"></div>
+            {/* <div className="w-[3px] h-full bg-white/60 backdrop-blur-[5px] rounded-full max-[1024px]:hidden"></div> */}
 
 
 
-            <div className="relative h-full w-[700px] max-[1024px]:w-[350px] max-[390px]:w-[310px]">
+            <div className="relative h-full w-full">
 
               <div onClick={() => {
                 projectRef.current.scrollLeft -= 220
@@ -419,15 +436,33 @@ export default function Home() {
 
               <div ref={projectRef} className="flex w-full h-full gap-[30px] overflow-x-scroll scroll-smooth items-center">
 
+
+
+                <motion.div whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: -2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative flex justify-center items-center">
+                  <div className="w-full h-[30px] bg-white shadow-md rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                    <p className="font-[bold]">CMU HUMANITAS</p>
+                  </div>
+
+                  <NextImage alt="images not found." src={'/banners/humanitas.jpg'} width={500} height={500} className="w-full  h-full rounded-[8px] object-cover object-center"></NextImage>
+                  {/* <p className="text-[14px] text-white">Images not found.</p> */}
+
+                  <div onClick={() => {
+                    window.location.href = "https://cmu-humanitas.vercel.app/"
+                  }} className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                    <p className="font-[medium] text-blue-400">Visit</p>
+                  </div>
+
+                </motion.div>
+
                 <motion.div whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: 3 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px]">
-                  <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                  <div className="w-full h-[30px] bg-white shadow-md rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
                     <p className="font-[bold]">Trading Board</p>
                   </div>
 
                   <NextImage alt="e-learning" src={'/trade.png'} width={200} height={200} className="w-full h-full rounded-[8px]"></NextImage>
 
                   <div onClick={() => {
-                    two.fire('Do you want to enter this?', false, true)
+                    alert("Project is not available to website!!")
                   }} className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 backdrop-blur-[5px] w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
                     <p className="font-[medium] text-blue-400">Visit</p>
                   </div>
@@ -435,13 +470,30 @@ export default function Home() {
                 </motion.div>
 
                 <motion.div whileHover={{ skewY: 0 }} transition={{ delay: 0.1 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: -2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative">
-                  <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                  <div className="w-full h-[30px] bg-white shadow-md rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
                     <p className="font-[bold]">Wanfah Lottery</p>
                   </div>
 
                   <NextImage alt="wanfah" src={'/banners/wanfah.png'} width={500} height={500} className="w-full h-full rounded-[8px] object-cover object-left-top"></NextImage>
 
-                  <div className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                  <div onClick={() => {
+                    window.location.href = "https://wanfah.online"
+                  }} className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                    <p className="font-[medium] text-blue-400">Visit</p>
+                  </div>
+
+                </motion.div>
+
+                <motion.div whileHover={{ skewY: 0 }} transition={{ delay: 0.1 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: 2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative">
+                  <div className="w-full h-[30px] bg-white shadow-md rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                    <p className="font-[bold]">Wanfah SSL</p>
+                  </div>
+
+                  <NextImage alt="wanfah" src={'/banners/ssl.jpg'} width={500} height={500} className="w-full h-full rounded-[8px] object-cover"></NextImage>
+
+                  <div onClick={() => {
+                    window.location.href = "https://wanfahssl.vercel.app"
+                  }} className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
                     <p className="font-[medium] text-blue-400">Visit</p>
                   </div>
 
@@ -450,7 +502,7 @@ export default function Home() {
 
                 <Suspense fallback={<p className="text-white">Test</p>}>
                   <motion.div whileHover={{ skewY: 0 }} transition={{ delay: 0.2 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: 2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[2deg] relative">
-                    <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                    <div className="w-full h-[30px] bg-white shadow-md rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
                       <p className="font-[bold]">Stock Management</p>
                     </div>
 
@@ -464,24 +516,61 @@ export default function Home() {
                 </Suspense>
 
                 <motion.div whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: -2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative">
-                  <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                  <div className="w-full h-[30px] bg-white shadow-md rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
                     <p className="font-[bold]">WhalePOS</p>
                   </div>
 
-                  <NextImage alt="wanfah" src={'/banners/wanfah.png'} width={500} height={500} className="w-full h-full rounded-[8px] object-cover object-left-top"></NextImage>
+                  <NextImage alt="wanfah" src={'/banners/pos.jpg'} width={500} height={500} className="w-full h-full rounded-[8px] object-cover object-left-top"></NextImage>
 
-                  <div className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                  <div onClick={() => {
+                    alert("Project is not available to website!!")
+                  }} className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
                     <p className="font-[medium] text-blue-400">Visit</p>
                   </div>
 
                 </motion.div>
 
-                <motion.div whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: 2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative">
-                  <div className="w-full h-[30px] bg-white rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                <motion.div whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: -2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative flex justify-center items-center">
+                  <div className="w-full h-[30px] bg-white shadow-md rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                    <p className="font-[bold]">Buddyfood</p>
+                  </div>
+
+                  <NextImage alt="images not found." src={'/banners/buddyfood.jpg'} width={500} height={500} className="w-full  h-full rounded-[8px] object-cover object-center"></NextImage>
+                  {/* <p className="text-[14px] text-white">Images not found.</p> */}
+
+                  <div onClick={() => {
+                    window.location.href = 'https://www.youtube.com/@despondenthopeless2186'
+                  }} className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                    <p className="font-[medium] text-blue-400">Visit</p>
+                  </div>
+
+                </motion.div>
+
+                <motion.div whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: 2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative flex justify-center items-center">
+                  <div className="w-full h-[30px] bg-white shadow-md rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
+                    <p className="font-[bold]">Nightmarket Valorant</p>
+                  </div>
+
+                  <NextImage alt="images not found." src={'/banners/valorant.jpg'} width={500} height={500} className="w-full  h-full rounded-[8px] object-cover object-center"></NextImage>
+                  {/* <p className="text-[14px] text-white">Images not found.</p> */}
+
+                  <div onClick={() => {
+                    window.location.href = 'https://play2valorant.netlify.app'
+                  }} className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
+                    <p className="font-[medium] text-blue-400">Visit</p>
+                  </div>
+
+                </motion.div>
+
+                <motion.div onClick={() => {
+                  alert("Project is not available to website!!")
+                }} whileHover={{ skewY: 0 }} initial={{ opacity: 0, translateX: 20 }} animate={{ opacity: 1, translateX: 0, skewY: 2 }} className="min-w-[200px] h-[95%] bg-white/20 backdrop-blur-[5px] rounded-[12px] skew-y-[-2deg] relative flex justify-center items-center">
+                  <div className="w-full h-[30px] bg-white shadow-md rounded-[8px] flex justify-center items-center absolute top-0 border-b-[2px] border-blue-400">
                     <p className="font-[bold]">Car Detection</p>
                   </div>
 
-                  <NextImage alt="wanfah" src={'/banners/wanfah.png'} width={500} height={500} className="w-full h-full rounded-[8px] object-cover object-left-top"></NextImage>
+                  {/* <NextImage alt="images not found." src={''} width={500} height={500} className="w-full  h-full rounded-[8px] object-cover object-left-top"></NextImage> */}
+                  <p className="text-[14px] text-white">Images not found.</p>
 
                   <div className="absolute bottom-2 left-1/2 translate-x-[-50%] bg-blue-400/30 w-[80%] h-[30px] rounded-[8px] flex justify-center items-center hover:bg-blue-400/40 duration-[0.3s] cursor-pointer">
                     <p className="font-[medium] text-blue-400">Visit</p>
@@ -493,18 +582,46 @@ export default function Home() {
 
           </div>
 
+          <div className="bg-[#28282B] rounded-[8px] items-center max-[1024px]:flex-col max-[1024px]:gap-[20px] p-[20px]">
+            <p className="font-[bold] mb-[10px] text-white text-[18px]">Inspiration Artwork</p>
+            <div className="flex flex-row flex-nowrap gap-[20px] overflow-y-scroll">
+              <div>
+                <NextImage className="min-w-[280px] h-[280px]" src={'/artworks/little.jpg'} alt="artwork1" width={2000} height={2000}></NextImage>
+                <p className="font-[medium] text-white text-center mt-[10px]">HACIPUPU My Little Hero Series Figures</p>
+              </div>
+              <div>
+                <NextImage className="min-w-[280px] h-[280px]" src={'/artworks/boy.jpg'} alt="artwork1" width={2000} height={2000}></NextImage>
+                <p className="font-[medium] text-white text-center mt-[10px]">HACIPUPU My Little Hero Series Figures</p>
+              </div>
+              <div>
+                <NextImage className="min-w-[280px] h-[280px]" src={'/artworks/art.jpg'} alt="artwork1" width={2000} height={2000}></NextImage>
+                <p className="font-[medium] text-white text-center mt-[10px]">Azura Natural Elements Series</p>
+              </div>
+              <div>
+                <NextImage className="min-w-[280px] h-[280px]" src={'/artworks/skull.jpg'} alt="artwork1" width={2000} height={2000}></NextImage>
+                <p className="font-[medium] text-white text-center mt-[10px]">SKULLPANDA The Ink Plum Blossom Series Figures</p>
+              </div>
+            </div>
+          </div>
+
+          <Lib />
+
           {/* <div className="w-[100%] h-[240px] bg-[#28282B] rounded-[8px] flex items-center gap-[50px] p-[30px]"></div> */}
 
           {/* Image Sequence */}
 
-          <div className="flex gap-[20px] max-[1024px]:flex-col">
-            <canvas ref={canvasRef} className="w-[500px] h-[300px] max-[1024px]:w-[450px] max-[390px]:w-[370px] max-[390px]:h-[270px] rounded-[8px]" width={1920} height={1080}></canvas>
+
+
+          <div className="grid grid-cols-3 gap-[10px] max-[1024px]:grid-cols-2">
+
+            <canvas ref={canvasRef} className="col-span-2 object-cover w-[100%] h-[350px] max-[390px]:w-[370px] max-[390px]:h-[270px] rounded-[8px]" width={1920} height={1080}></canvas>
+
             {/* <motion.div initial={{ opacity: 0 }} transition={{ duration: 0.3 }} animate={frame > 40 ? { opacity: 1 } : { opacity: 0 }} className="flex flex-col justify-center items-center w-full">
               <p className="font-[medium] text-[30px] text-white">CODING IS NOT DIFFERENT WITH</p>
               <p className="font-[light] text-[24px] text-white">THE MAGIC</p>
             </motion.div> */}
 
-            <div className="w-[350px] max-[1024px]:w-[450px] h-full bg-[#28282B] rounded-[8px] p-[20px] flex flex-col relative max-[390px]:w-[370px]">
+            <div className="col-span-1 max-[1024px]:col-span-2 h-full bg-[#28282B] rounded-[8px] p-[20px] flex flex-col relative">
               <div className="flex gap-[10px] items-center">
                 <p className="font-[medium] text-[16px] text-white">Comments</p>
                 <AiFillMessage size={20} className="text-white" />
@@ -514,7 +631,7 @@ export default function Home() {
                 {comments && comments.length > 0 ? comments.map((item: CommentsInterface, index: number) => {
                   return (
                     <div key={index} className="flex text-black mt-[10px] flex-col w-full h-[30px] bg-white/80 rounded-[8px] justify-center p-[5px]">
-                      {/* <p className="font-[kn-light]">ผู้ส่ง : {item.sender}</p> */}
+                      <p className="font-[kn-light]">ผู้ส่ง : {item.sender}</p>
                       <div className="flex justify-between">
                         <p className="font-[kn-regular] select-none">{item.text}</p>
                         <div className="flex items-center gap-[5px]">
@@ -530,7 +647,7 @@ export default function Home() {
                       </div>
                     </div>
                   )
-                }) : null}
+                }) : <p className="font-[kn-light] text-white/60 pointer-events-none select-none">Server is not responding.</p>}
               </div>
 
               <div className="w-[90%] h-[40px] bg-white/20 rounded-[8px] absolute bottom-2 left-[50%] translate-x-[-50%] flex items-center p-[10px] justify-between cursor-pointer">
@@ -539,8 +656,11 @@ export default function Home() {
               </div>
             </div>
 
-            <div>
-              <AreaChart width={320} height={300} data={dataChart}
+          </div>
+
+          <div className="max-[430px]:mt-[140px]">
+            <ResponsiveContainer width={'100%'} height={300}>
+              <AreaChart data={dataChart}
                 margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
@@ -554,19 +674,19 @@ export default function Home() {
                 </defs>
                 {/* <XAxis dataKey="name" />
                 <YAxis />
-                <CartesianGrid strokeDasharray="1" /> */}
-                <Tooltip />
+                <CartesianGrid strokeDasharray="1" />
+                <Tooltip /> */}
                 <Area type="monotone" dataKey="uv" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
                 <Area type="monotone" dataKey="pv" stroke="#82ca9d" fillOpacity={1} fill="url(#colorPv)" />
               </AreaChart>
 
-            </div>
+            </ResponsiveContainer>
           </div>
 
           <div id="api" className="flex gap-[10px] mt-[5px] max-[1024px]:flex-col">
-            <div className="w-[500px] max-[1024px]:w-[450px] bg-[#28282B] rounded-[8px] p-[10px] max-[390px]:w-[370px]">
+            <div className="bg-[#28282B] rounded-[8px] p-[10px] w-full">
 
-              <p className="font-[bold] text-white mb-[10px] text-center text-[20px]">TRY MY API !</p>
+              <p className="font-[bold] text-white mb-[10px] text-center text-[20px]">API Portal</p>
 
               <div className="flex flex-col gap-[10px]">
                 <div onClick={() => {
@@ -657,14 +777,15 @@ export default function Home() {
                 <div className="w-full h-full ml-[10px] relative">
                   <MdGTranslate onClick={() => {
                     setTranslate(!translate)
-                  }} size={20} className="text-white absolute right-0 bottom-0 cursor-pointer z-[1]" />
+                  }} size={20} className="text-white absolute right-0 bottom-0 cursor-pointer z-[1] animate-pulse" />
                   {!translate ? <p className="font-[light] text-white">Greetings! This is "restful api testing" you can try to calling my API Service with SEND BUTTON or your own code.</p> : <p className="font-[kn-light] text-white">สวัสดีครับ! ในส่วนนี้เป็น "restful api testing" ทุกคนสามารถเรียก API โดยผ่านปุ่ม SEND หรือโค้ดของคุณเอง.</p>}
 
                   <div className="w-full bg-black/30 absolute bottom-0 p-[5px] rounded-[8px]">
-                    <p className="font-[light] text-white">{URL?.path ? URL.path : null}</p>
-                    <div className="flex gap-[5px]">
-                      <p className="font-[light] text-white mt-[10px]">output : </p>
-                      <pre className="font-[light] text-white">{JSON.stringify(output, null, 4)}</pre>
+                    {/* <p className="font-[light] text-white">{URL?.path ? URL.path : null}</p> */}
+                    <div className="flex items-center gap-[5px]">
+                      <p className="font-[light] text-white">output : </p>
+                      <p className="font-[light] text-white">Server is not available</p>
+                      {/* <pre className="font-[light] text-white">{JSON.stringify(output, null, 4)}</pre> */}
                     </div>
                   </div>
                 </div>
@@ -716,7 +837,12 @@ export default function Home() {
               <p className="font-[bold] text-[20px] text-white">Experience</p>
               {/* <a className="text-blue-400 text-[14px] " href="https://store.line.me/stickershop/product/25620125/th">https://store.line.me/stickersh...</a> */}
 
-              <p className="font-[kn-light] text-white text-[14px]">- ยังไม่มีประสบการณ์ทำงาน</p>
+              <div>
+                <p className="font-[kn-light] text-white text-[14px]">- Wanfah Company</p>
+                <p className="font-[kn-light] text-white text-[14px]">- Syncode Organization</p>
+                <p className="font-[kn-light] text-white text-[14px]">- Freelance Job 70+</p>
+              </div>
+
 
               {/* <a target="_blank" className="text-blue-400 mt-[20px] text-[14px]" href="https://www.facebook.com/Ratanon.Boonmata.PlayTwo">https://www.facebook.com/Ratano...</a> */}
             </div>
@@ -726,7 +852,7 @@ export default function Home() {
           </div>
 
 
-          <div id="youtube" className="w-full bg-transparent p-[10px] grid grid-cols-3 gap-[20px] place-items-center max-[1024px]:grid-cols-1">
+          <div id="youtube" className="w-full bg-transparent p-[10px] grid grid-cols-3 gap-[20px] place-items-center max-[1180px]:grid-cols-2 max-[1024px]:grid-cols-1">
             <div className="flex flex-col gap-[10px]">
               <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
                 <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/GVUBEyJ9ic4?si=cfv8zvRjMP-Di-kf" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
@@ -784,7 +910,7 @@ export default function Home() {
           </div>
 
 
-          <div id="nft" className="w-full h-[60px] bg-transparent flex justify-center items-center mt-[50px]">
+          {/* <div id="nft" className="w-full h-[60px] bg-transparent flex justify-center items-center mt-[50px]">
             <div className="flex flex-col items-center">
               <p className="font-[medium] text-white text-[20px]">STEP TO WEBSITE 3.0</p>
               <p onClick={() => {
@@ -836,7 +962,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
 
         </div>
 
