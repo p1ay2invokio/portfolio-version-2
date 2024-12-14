@@ -173,10 +173,11 @@ export default function Home() {
           <p className="font-[medium] text-white text-[18px]">Contact</p>
         </div> */}
 
-        <div>
-          <p onClick={() => {
-            resetScroll()
-          }} className="font-[medium] text-white text-[18px] cursor-pointer">p1ay2.14</p>
+        <div className="space-y-[-4px]" onClick={() => {
+          resetScroll()
+        }}>
+          <p className="font-[medium] text-white text-[18px] cursor-pointer">p1ay2.14</p>
+          <p className="font-[light] ml-[20px] text-white text-[12px] cursor-pointer">sungjintwo</p>
         </div>
 
         <div className="flex items-center gap-[20px]">
@@ -221,7 +222,8 @@ export default function Home() {
             <div className="flex flex-col justify-between">
               <div className="w-[120px]">
                 <p className="text-white font-[bold]">p1ay2.14</p>
-                <p className="text-white font-[kn-regular] text-[12px]">เพลย์ทู</p>
+                <p className="text-white font-[light] text-[11px] mt-[5px]">Height: 176</p>
+                <p className="text-white font-[light] text-[11px]">Weight: 119.05 lbs</p>
                 {/* <p className="font-[light] text-[14px] text-white mt-[5px]">wpm 71</p> */}
               </div>
               <div className="flex gap-[5px]">
@@ -855,10 +857,10 @@ export default function Home() {
           <div id="youtube" className="w-full bg-transparent p-[10px] grid grid-cols-3 gap-[20px] place-items-center max-[1180px]:grid-cols-2 max-[1024px]:grid-cols-1">
             <div className="flex flex-col gap-[10px]">
               <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
-                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/GVUBEyJ9ic4?si=cfv8zvRjMP-Di-kf" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/PdbESvOAuIU?si=ciLprFZjPw7S4oDk" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
               </div>
               <div className="flex flex-col items-start space-y-[-2px]">
-                <p className="font-[kn-regular] text-white">บทความการใช้งาน Docker เบื้องต้น</p>
+                <p className="font-[kn-regular] text-white">เปิดพอร์ตสารสนเทศ มหาวิทยาลัยเชียงใหม่</p>
                 <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
               </div>
             </div>
@@ -891,10 +893,10 @@ export default function Home() {
             </div>
             <div className="flex flex-col gap-[10px]">
               <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
-                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/gmGsljeagnw?si=PhGTA5KoEw2M0tzu" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/8Zvk5h_VPuM?si=Hqs6uZEFpmPLmqNd" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
               </div>
               <div className="flex flex-col items-start space-y-[-2px]">
-                <p className="font-[kn-regular] text-white">Javascript ภายใน 3 นาที ?</p>
+                <p className="font-[kn-regular] text-white">แนะนำเครื่องมือเขียนโปรแกรมที่ดีที่สุด</p>
                 <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
               </div>
             </div>
@@ -907,6 +909,37 @@ export default function Home() {
                 <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
               </div>
             </div>
+
+            <div className="flex flex-col gap-[10px]">
+              <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/0nV33WpmZu4?si=Ndvbb2OidDAsqQPm" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+              </div>
+              <div className="flex flex-col items-start space-y-[-2px]">
+                <p className="font-[kn-regular] text-white">Python list, tuple ภายใน 5 นาที</p>
+                <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-[10px]">
+              <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/91r4OKpoBlw?si=lGhpiSYhVgsJDVBO" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+              </div>
+              <div className="flex flex-col items-start space-y-[-2px]">
+                <p className="font-[kn-regular] text-white">This is way to get free SSL</p>
+                <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-[10px]">
+              <div className="w-[350px] h-[200px] bg-[#28282B] rounded-[8px]">
+                <iframe width="100%" height="100%" className="rounded-[8px]" src="https://www.youtube.com/embed/nK0bjx7ZgHo?si=4pr2C03B--_ahBRX" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+              </div>
+              <div className="flex flex-col items-start space-y-[-2px]">
+                <p className="font-[kn-regular] text-white">EXPORT MSSQL SERVER</p>
+                <p className="font-[kn-light] text-blue-400 text-[14px]">เพิ่มเติม</p>
+              </div>
+            </div>
+
           </div>
 
 
